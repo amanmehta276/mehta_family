@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sneha weds Aman | Wedding Invitation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wedding-gold: #D4AF37;
+            --wedding-maroon: #800000;
+            --wedding-cream: #FFFDD0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--wedding-cream);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .font-cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .hero-bg {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+        }
+
+        .countdown-item {
+            min-width: 80px;
+        }
+
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background-color: var(--wedding-gold);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .card-border {
+            border: 2px solid var(--wedding-gold);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .card-border::before {
+            content: "✨";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--wedding-cream);
+            padding: 0 10px;
+            font-size: 1.5rem;
+        }
+
+        /* Comment Section Styles */
+        .comment-input {
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            width: 100%;
+            background: white;
+        }
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.1);
+        }
+        
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Audio Player -->
+    <div class="audio-player">
+        <button id="musicToggle" class="bg-white/90 p-4 rounded-full shadow-xl border border-[#D4AF37] hover:scale-110 transition-all flex items-center justify-center">
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#800000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            <svg id="pauseIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#800000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+        <audio id="weddingSong" loop>
+            <!-- Add song URL here -->
+            <source src="" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero-bg flex flex-col items-center justify-center text-white text-center px-4 relative">
+        <div class="glass-morphism p-10 md:p-16 rounded-3xl max-w-3xl border border-white/20">
+            <h2 class="text-lg md:text-xl uppercase tracking-[0.3em] mb-6 font-light">Join us in celebrating the union of</h2>
+            <h1 class="text-6xl md:text-9xl font-cursive mb-6 text-[#FFFDD0]">Sneha & Aman</h1>
+            <div class="flex items-center justify-center space-x-6 mb-10">
+                <div class="h-px w-16 bg-white/40"></div>
+                <span class="text-2xl md:text-3xl font-serif italic">Save the Date</span>
+                <div class="h-px w-16 bg-white/40"></div>
+            </div>
+            <p class="text-2xl md:text-4xl font-serif font-bold tracking-wider">APRIL 20TH, 2026</p>
+            <p class="text-lg md:text-xl mt-4 font-light italic">Kumardhubi, Dhanbad</p>
+        </div>
+
+        <div class="absolute bottom-10 animate-bounce cursor-pointer" onclick="document.getElementById('countdown-sec').scrollIntoView({behavior: 'smooth'})">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 13 5 5 5-5M7 6l5 5 5-5"/></svg>
+        </div>
+    </header>
+
+    <!-- Countdown Section -->
+    <section id="countdown-sec" class="py-24 px-4 bg-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h3 class="text-4xl font-serif mb-12 text-[#800000]">Celebrations Begin In...</h3>
+            <div id="countdown" class="flex flex-wrap justify-center gap-4 md:gap-10">
+                <div class="countdown-item bg-[#fcf9f2] p-8 rounded-2xl shadow-sm border border-[#D4AF37]/20">
+                    <span id="days" class="text-5xl md:text-6xl font-bold block text-[#D4AF37]">00</span>
+                    <span class="text-xs uppercase tracking-widest text-gray-400 mt-2 block">Days</span>
+                </div>
+                <div class="countdown-item bg-[#fcf9f2] p-8 rounded-2xl shadow-sm border border-[#D4AF37]/20">
+                    <span id="hours" class="text-5xl md:text-6xl font-bold block text-[#D4AF37]">00</span>
+                    <span class="text-xs uppercase tracking-widest text-gray-400 mt-2 block">Hours</span>
+                </div>
+                <div class="countdown-item bg-[#fcf9f2] p-8 rounded-2xl shadow-sm border border-[#D4AF37]/20">
+                    <span id="minutes" class="text-5xl md:text-6xl font-bold block text-[#D4AF37]">00</span>
+                    <span class="text-xs uppercase tracking-widest text-gray-400 mt-2 block">Minutes</span>
+                </div>
+                <div class="countdown-item bg-[#fcf9f2] p-8 rounded-2xl shadow-sm border border-[#D4AF37]/20">
+                    <span id="seconds" class="text-5xl md:text-6xl font-bold block text-[#D4AF37]">00</span>
+                    <span class="text-xs uppercase tracking-widest text-gray-400 mt-2 block">Seconds</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Timeline Section -->
+    <section class="py-24 px-4 bg-[#fcf9f2] border-y border-[#D4AF37]/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h3 class="text-5xl font-cursive text-[#800000] mb-4">Event Schedule</h3>
+                <div class="w-24 h-1 bg-[#D4AF37] mx-auto opacity-50"></div>
+            </div>
+
+            <div class="space-y-16 relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-px bg-[#D4AF37]/40 hidden md:block"></div>
+
+                <!-- Day 1: Tilak -->
+                <div class="relative flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pr-12 text-center md:text-right mb-6 md:mb-0">
+                        <h4 class="text-2xl font-serif font-bold text-[#800000]">Tilak & Ring Ceremony</h4>
+                        <p class="text-gray-600 mt-2 italic font-light">The first step to forever</p>
+                        <p class="text-[#D4AF37] font-semibold mt-1">6:00 PM onwards</p>
+                        <p class="text-sm text-gray-500 mt-1">Hotel Vivanta, Chanakyapuri, Dhanbad</p>
+                    </div>
+                    <div class="timeline-dot hidden md:block"></div>
+                    <div class="md:w-1/2 md:pl-12 text-center md:text-left">
+                        <span class="text-3xl font-serif text-[#D4AF37] font-bold">18th April</span>
+                        <p class="text-gray-400 uppercase tracking-widest text-sm">Saturday</p>
+                    </div>
+                </div>
+
+                <!-- Day 2: Haldi -->
+                <div class="relative flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pr-12 text-center md:text-right order-2 md:order-1">
+                        <span class="text-3xl font-serif text-[#D4AF37] font-bold">19th April</span>
+                        <p class="text-gray-400 uppercase tracking-widest text-sm">Sunday</p>
+                    </div>
+                    <div class="timeline-dot hidden md:block order-2"></div>
+                    <div class="md:w-1/2 md:pl-12 text-center md:text-left mb-6 md:mb-0 order-1 md:order-3">
+                        <h4 class="text-2xl font-serif font-bold text-[#800000]">Haldi & Matkor</h4>
+                        <p class="text-gray-600 mt-2 italic font-light">Laughter and golden hues</p>
+                    </div>
+                </div>
+
+                <!-- Day 3: Wedding -->
+                <div class="relative flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pr-12 text-center md:text-right mb-6 md:mb-0">
+                        <h4 class="text-2xl font-serif font-bold text-[#800000]">Barat Agaman & Preeti Bhoj</h4>
+                        <p class="text-gray-600 mt-2 italic font-light">The Grand Wedding Ceremony</p>
+                        <p class="text-[#D4AF37] font-semibold mt-1">7:00 PM onwards</p>
+                        <p class="text-sm text-gray-500 mt-1">Galaxy Garden, Maithon Road, Kumardhubi</p>
+                    </div>
+                    <div class="timeline-dot hidden md:block bg-[#800000]"></div>
+                    <div class="md:w-1/2 md:pl-12 text-center md:text-left">
+                        <span class="text-3xl font-serif text-[#800000] font-bold">20th April</span>
+                        <p class="text-gray-400 uppercase tracking-widest text-sm">Monday</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Venue Highlights -->
+    <section class="py-24 px-4 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <div class="card-border text-center">
+                <h3 class="text-3xl font-serif text-[#800000] mb-6">Venues</h3>
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div class="p-4">
+                        <h5 class="text-xl font-bold text-[#D4AF37] mb-2">Hotel Patliputra</h5>
+                        <p class="text-gray-500 text-sm">Kumardhubi, Dhanbad</p>
+                        <p class="text-xs mt-2 italic">(Tilak Ceremony Location)</p>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="text-xl font-bold text-[#D4AF37] mb-2">Galaxy Garden</h5>
+                        <p class="text-gray-500 text-sm">Main Road, Kumardhubi, Dhanbad</p>
+                        <p class="text-xs mt-2 italic">(Wedding & Reception Location)</p>
+                    </div>
+                </div>
+                <div class="mt-12 text-gray-600 font-light italic">
+                    "We can't wait to see you there!"
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+    <!-- Wishes Section (Comment System) -->
+    <section class="py-32 px-6 bg-white reveal">
+        <div class="max-w-2xl mx-auto">
+            <div class="text-center mb-12">
+                <h3 class="font-cinzel text-3xl text-royal-maroon tracking-widest uppercase">Wishes & Blessings</h3>
+                <p class="text-gray-500 text-sm italic mt-2">Your messages make our day special</p>
+            </div>
+            
+            <div class="bg-[#fcf9f2] p-8 rounded-3xl border border-gold-primary/20 shadow-lg">
+                <div class="space-y-4">
+                    <input type="text" id="guestName" placeholder="Your Name" class="comment-input">
+                    <input type="text" id="guestRelation" placeholder="Your relation to bride and groom" class="comment-input">
+                    <textarea id="guestMessage" rows="3" placeholder="Write your blessings..." class="comment-input"></textarea>
+                    <button id="postBlessing" class="w-full bg-royal-maroon text-gold-light font-cinzel font-bold py-4 rounded-xl hover:bg-[#4a0000] transition-all tracking-widest uppercase">Post Blessing</button>
+                </div>
+                
+                <div id="blessingsList" class="mt-10 space-y-6 max-h-[400px] overflow-y-auto pr-2">
+                    <div class="border-b border-gold-primary/10 pb-4">
+                        <p class="text-royal-maroon font-bold text-sm">Mehta Family</p>
+                        <p class="text-gray-600 text-sm italic">Congratulations to Sneha and Aman! Wishing you both a lifetime of happiness.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 bg-white text-center border-t border-[#D4AF37]/20">
+        <div class="font-cursive text-4xl text-[#800000] mb-4">Sneha & Aman</div>
+        <p class="text-xs text-gray-400 uppercase tracking-widest">April 2026 • Dhanbad, Jharkhand</p>
+        <p class="mt-8 text-xs text-gray-300">With love from the Mehta and Kumar Family</p>
+    </footer>
+
+    <script>
+        // Set the date for the START of functions (18th April 2026)
+        const countdownDate = new Date("April 18, 2026 18:00:00").getTime();
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("countdown").innerHTML = "<h2 class='text-4xl text-[#D4AF37] font-cursive'>The Festivities Have Begun!</h2>";
+            }
+        }, 1000);
+
+        // Music Player Toggle
+        const audio = document.getElementById('weddingSong');
+        const btn = document.getElementById('musicToggle');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+
+        btn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    // This will trigger if the source is empty
+                    console.log("Audio source is empty. Please add your MP3 link.");
+                });
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
