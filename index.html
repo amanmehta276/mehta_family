@@ -77,11 +77,22 @@
             padding: 12px;
             width: 100%;
             background: white;
+            transition: all 0.2s ease;
         }
         .comment-input:focus {
             outline: none;
             border-color: var(--gold-primary);
             box-shadow: 0 0 10px rgba(197, 160, 89, 0.1);
+        }
+
+        .blessing-item {
+            transition: all 0.5s ease;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         #musicError {
@@ -98,13 +109,36 @@
             z-index: 99;
             border: 1px solid #ff000033;
         }
+
+        /* Custom Scrollbar for Wishes */
+        #blessingsList::-webkit-scrollbar {
+            width: 4px;
+        }
+        #blessingsList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #blessingsList::-webkit-scrollbar-thumb {
+            background: var(--gold-primary);
+            border-radius: 10px;
+        }
+
+        .loading-dots:after {
+            content: ' .';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { color: rgba(0,0,0,0); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            40% { color: var(--gold-primary); text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0); }
+            60% { text-shadow: .25em 0 0 var(--gold-primary), .5em 0 0 rgba(0,0,0,0); }
+            80%, 100% { text-shadow: .25em 0 0 var(--gold-primary), .5em 0 0 var(--gold-primary); }
+        }
     </style>
 </head>
 <body>
 
     <!-- Audio Error Message -->
     <div id="musicError">
-        ⚠️ <b>Music file "mehta.mpeg" not found.</b> <br>Make sure it is in the same folder as this HTML file.
+        ⚠️ <b>Music file not found.</b> <br>Ensure "mehta.mpeg" is in the correct directory.
     </div>
 
     <!-- Audio Player -->
@@ -143,7 +177,12 @@
         <p class="text-lg leading-relaxed text-gray-600 font-light italic">
             "By the grace of the Almighty and the warmth of family, we invite you to celebrate the wedding festivities of our daughter."
         </p>
-        <div class="mt-12 font-cursive text-6xl md:text-7xl text-gold-primary">Sneha Mehta & Aman Kumar</div>
+        <!-- <div class="mt-12 font-cursive text-6xl md:text-7xl text-gold-primary">Sneha Mehta & Aman Kumar</div> -->
+         <div class="mt-12 font-cursive text-5xl md:text-7xl text-gold-primary leading-tight">
+            <span class="block md:inline">Sneha Mehta</span>
+            <span class="block md:inline-block my-2 md:my-0">&</span>
+            <span class="block md:inline">Aman Kumar</span>
+        </div>
         <div class="mt-16 w-16 h-px bg-gold-primary/30 mx-auto"></div>
     </section>
 
@@ -249,18 +288,16 @@
             </div>
             
             <div class="bg-[#fcf9f2] p-8 rounded-3xl border border-gold-primary/20 shadow-lg">
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <input type="text" id="guestName" placeholder="Your Name" class="comment-input">
-                    <input type="text" id="guestRelation" placeholder="Your relation to bride and groom" class="comment-input">
-                    <textarea id="guestMessage" rows="3" placeholder="Write your blessings..." class="comment-input"></textarea>
-                    <button id="postBlessing" class="w-full bg-royal-maroon text-gold-light font-cinzel font-bold py-4 rounded-xl hover:bg-[#4a0000] transition-all tracking-widest uppercase">Post Blessing</button>
+                    <input type="text" id="guestRelation" placeholder="Relation (e.g. Brother, Friend)" class="comment-input">
                 </div>
+                <textarea id="guestMessage" rows="3" placeholder="Write your blessings..." class="comment-input mb-4"></textarea>
+                <button id="postBlessing" class="w-full bg-royal-maroon text-gold-light font-cinzel font-bold py-4 rounded-xl hover:bg-[#4a0000] transition-all tracking-widest uppercase disabled:opacity-50">Post Blessing</button>
                 
-                <div id="blessingsList" class="mt-10 space-y-6 max-h-[400px] overflow-y-auto pr-2">
-                    <div class="border-b border-gold-primary/10 pb-4">
-                        <p class="text-royal-maroon font-bold text-sm">Mehta Family</p>
-                        <p class="text-gray-600 text-sm italic">Congratulations to Sneha and Aman! Wishing you both a lifetime of happiness.</p>
-                    </div>
+                <div id="blessingsList" class="mt-10 space-y-6 max-h-[500px] overflow-y-auto pr-3 flex flex-col">
+                    <div id="loadingWishes" class="text-center py-10 text-gray-400 italic text-sm loading-dots">Loading blessings</div>
+                    <!-- Wishes will be populated here -->
                 </div>
             </div>
         </div>
@@ -272,6 +309,135 @@
         <p class="text-xs tracking-[0.5em] text-gray-400 uppercase">April 2026 • Dhanbad</p>
         <p class="mt-16 text-[10px] text-gray-300 tracking-[0.2em] uppercase">Created with ❤️ for our Didi</p>
     </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Initialize Firebase
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'wedding-invitation-2026';
+
+        const list = document.getElementById('blessingsList');
+        const loadingIndicator = document.getElementById('loadingWishes');
+        const postBtn = document.getElementById('postBlessing');
+        
+        let currentUser = null;
+
+        // AUTHENTICATION PROTOCOL
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Firebase Authentication Error:", err);
+            }
+        };
+
+        // Start Auth process immediately
+        initAuth();
+
+        // Listen for Auth State Changes
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                console.log("Authenticated as:", user.uid);
+                loadBlessings();
+            }
+        });
+
+        function loadBlessings() {
+            if (!currentUser) return;
+            
+            // Correct path for public collaborative data
+            const blessingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'blessings');
+            
+            // Real-time listener for blessings
+            onSnapshot(blessingsCol, (snapshot) => {
+                loadingIndicator.style.display = 'none';
+                
+                // Fetch all docs and sort in memory (since we can't use complex queries like orderBy without manual index creation)
+                const blessings = snapshot.docs.map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data() 
+                })).sort((a, b) => {
+                    const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
+                    const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
+                    return timeB - timeA; // Descending order
+                });
+
+                if (blessings.length === 0) {
+                    list.innerHTML = '<p class="text-center text-gray-400 py-10 italic text-sm">Be the first to leave a blessing!</p>';
+                    return;
+                }
+
+                list.innerHTML = '';
+                blessings.forEach(data => {
+                    const item = document.createElement('div');
+                    item.className = "blessing-item bg-white/70 p-5 rounded-2xl border-b border-gold-primary/10 mb-2 shadow-sm";
+                    item.innerHTML = `
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-royal-maroon font-bold text-sm">${data.name}</p>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-gold-primary bg-gold-primary/10 px-2 py-1 rounded-md">${data.relation || 'Guest'}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm italic leading-relaxed">"${data.message}"</p>
+                    `;
+                    list.appendChild(item);
+                });
+            }, (error) => {
+                console.error("Firestore Permission Error:", error);
+                loadingIndicator.innerHTML = `<div class="text-red-500 text-xs text-center py-4">Database Error. Please try refreshing.</div>`;
+            });
+        }
+
+        // Posting a new blessing
+        postBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                console.warn("User not authenticated yet.");
+                return;
+            }
+
+            const nameInput = document.getElementById('guestName');
+            const relationInput = document.getElementById('guestRelation');
+            const msgInput = document.getElementById('guestMessage');
+
+            const name = nameInput.value.trim();
+            const relation = relationInput.value.trim();
+            const message = msgInput.value.trim();
+
+            if (name && message) {
+                postBtn.disabled = true;
+                postBtn.innerText = "Posting...";
+
+                try {
+                    const blessingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'blessings');
+                    await addDoc(blessingsCol, {
+                        name,
+                        relation,
+                        message,
+                        timestamp: serverTimestamp()
+                    });
+
+                    nameInput.value = '';
+                    relationInput.value = '';
+                    msgInput.value = '';
+                } catch (e) {
+                    console.error("Post Blessing Error:", e);
+                } finally {
+                    postBtn.disabled = false;
+                    postBtn.innerText = "Post Blessing";
+                }
+            }
+        });
+    </script>
 
     <script>
         // Scroll Animation logic
@@ -297,23 +463,23 @@
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerText = mins < 10 ? "0" + mins : mins;
-            document.getElementById("seconds").innerText = secs < 10 ? "0" + secs : secs;
+            const dDisplay = document.getElementById("days");
+            const hDisplay = document.getElementById("hours");
+            const mDisplay = document.getElementById("minutes");
+            const sDisplay = document.getElementById("seconds");
+
+            if (dDisplay) dDisplay.innerText = days < 0 ? "00" : (days < 10 ? "0" + days : days);
+            if (hDisplay) hDisplay.innerText = days < 0 ? "00" : (hours < 10 ? "0" + hours : hours);
+            if (mDisplay) mDisplay.innerText = days < 0 ? "00" : (mins < 10 ? "0" + mins : mins);
+            if (sDisplay) sDisplay.innerText = days < 0 ? "00" : (secs < 10 ? "0" + secs : secs);
         }, 1000);
 
-        // Music Player & Error Handling
+        // Music Player
         const audio = document.getElementById('weddingSong');
         const btn = document.getElementById('musicToggle');
         const playIcon = document.getElementById('playIcon');
         const pauseIcon = document.getElementById('pauseIcon');
         const errorMsg = document.getElementById('musicError');
-
-        // Check if file exists/loads
-        audio.addEventListener('error', () => {
-            console.error("Audio file failed to load.");
-        });
 
         btn.addEventListener('click', () => {
             if (audio.paused) {
@@ -329,28 +495,6 @@
                 audio.pause();
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
-            }
-        });
-
-        // Blessing Section Script
-        const postBtn = document.getElementById('postBlessing');
-        const list = document.getElementById('blessingsList');
-
-        postBtn.addEventListener('click', () => {
-            const name = document.getElementById('guestName').value;
-            const msg = document.getElementById('guestMessage').value;
-
-            if (name && msg) {
-                const newBlessing = document.createElement('div');
-                newBlessing.className = "border-b border-gold-primary/10 pb-4 animate-pulse";
-                newBlessing.innerHTML = `
-                    <p class="text-royal-maroon font-bold text-sm">${name}</p>
-                    <p class="text-gray-600 text-sm italic">"${msg}"</p>
-                `;
-                list.prepend(newBlessing);
-                document.getElementById('guestName').value = '';
-                document.getElementById('guestMessage').value = '';
-                setTimeout(() => newBlessing.classList.remove('animate-pulse'), 1000);
             }
         });
     </script>
